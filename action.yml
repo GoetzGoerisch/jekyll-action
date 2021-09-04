@@ -1,5 +1,5 @@
 name: 'Jekyll Actions'
-description: 'A GitHub Action to build and publish Jekyll sites to GitHub Pages'
+description: 'A GitHub Action to build and publish Jekyll sites to GitHub Pages for other repos'
 inputs:
   token:
     description: 'The GITHUB_TOKEN secret'
@@ -9,6 +9,12 @@ inputs:
     required: false
   jekyll_src:  
     description: 'The Jekyll website source directory'
+    required: false
+  dest_repo:
+    description: 'destination repo'
+    required: true
+  dest_branch:
+    description: 'destination branch'
     required: false
   jekyll_build_options:  
     description: 'Additional Jekyll build arguments (see https://jekyllrb.com/docs/configuration/options/#build-command-options)'
@@ -53,6 +59,10 @@ outputs:
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  args:
+    - ${{ inputs.jekyll_src }}
+    - ${{ inputs.dest_repo }}
+    - ${{ inputs.dest_branch }}
 branding:
   icon: 'book'
   color: 'blue'

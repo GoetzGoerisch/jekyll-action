@@ -159,11 +159,6 @@ if [ "${INPUT_BUILD_ONLY}" = true ]; then
   exit $?
 fi
 
-if [ "${GITHUB_REF}" = "refs/heads/${remote_branch}" ]; then
-  echo "::error::Cannot publish on branch ${remote_branch}"
-  exit 1
-fi
-
 cd ${BUILD_DIR}
 
 # Initializing the repo now to prevent the Jekyll build from overwriting the .git folder 
@@ -178,7 +173,9 @@ fi
 # No need to have GitHub Pages to run Jekyll
 touch .nojekyll
 
-echo "Publishing to ${GITHUB_REPOSITORY} on branch ${remote_branch}"
+echo "Publishing to ${INPUT_DEST_REPO} on branch ${remote_branch}"
+
+REMOTE_REPO="https://${GITHUB_ACTOR}:${INPUT_TOKEN}@github.com/${INPUT_DEST_REPO}.git" && \
 
 if [ -n "$INPUT_COMMIT_AUTHOR" ]; then
   git config user.name "${INPUT_COMMIT_AUTHOR}" && \
@@ -190,7 +187,7 @@ else
   echo "::debug::commit author is set to the default github actor"
 fi
 git add . && \
-git commit $COMMIT_OPTIONS -m "jekyll build from Action ${GITHUB_SHA}" && \
+git commit $COMMIT_OPTIONS -m "Site  build from Action ${GITHUB_SHA}" && \
 git push $PUSH_OPTIONS $REMOTE_REPO $LOCAL_BRANCH:$remote_branch && \
 echo "SHA=$( git rev-parse ${LOCAL_BRANCH} )" >> $GITHUB_OUTPUT
 rm -fr .git && \
